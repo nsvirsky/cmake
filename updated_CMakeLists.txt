@@ -1,0 +1,136 @@
+cmake_minimum_required(VERSION 3.13)
+
+project(mlio-third-party LANGUAGES NONE)
+
+set(CMAKE_CXX_STANDARD 17)
+
+set(_CFLAGS "-fPIC -fvisibility=hidden -fvisibility-inlines-hidden -std=c99")
+set(_CXXFLAGS "-fPIC -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17")
+
+include(ExternalProject)
+
+ExternalProject_Add(
+    absl
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+    GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
+    GIT_TAG 20230802.1
+    CMAKE_ARGS
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
+        -DCMAKE_CXX_VISIBILITY_PRESET=hidden
+        -DCMAKE_VISIBILITY_INLINES_HIDDEN=ON
+        -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+)
+
+ExternalProject_Add(
+    awssdk
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+    GIT_REPOSITORY https://github.com/aws/aws-sdk-cpp.git
+    GIT_TAG 1.11.223
+    CMAKE_ARGS
+        -DBUILD_ONLY=s3
+        -DCPP_STANDARD=17
+        -DENABLE_TESTING=OFF
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_VISIBILITY_INLINES_HIDDEN=ON
+        -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+)
+
+ExternalProject_Add(
+    dlpack
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+    GIT_REPOSITORY https://github.com/dmlc/dlpack.git
+    GIT_TAG v0.8
+    CMAKE_ARGS
+        -DBUILD_MOCK=OFF
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+)
+
+ExternalProject_Add(
+    fmt
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+    GIT_TAG 9.1.0
+    GIT_SHALLOW TRUE
+    CMAKE_ARGS
+        -DFMT_DOC=OFF
+        -DFMT_TEST=OFF
+        -DBUILD_SHARED_LIBS=OFF
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
+        -DCMAKE_CXX_VISIBILITY_PRESET=hidden
+        -DCMAKE_VISIBILITY_INLINES_HIDDEN=ON
+        -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+)
+
+ExternalProject_Add(
+    gtest
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.14.0
+    GIT_SHALLOW TRUE
+    CMAKE_ARGS
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
+        -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+)
+
+# Assuming natsort is a local directory or custom implementation
+ExternalProject_Add(
+    natsort
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+    DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/natsort <SOURCE_DIR>
+    PATCH_COMMAND patch < strnatcmp.h.patch
+    CMAKE_ARGS
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+)
+
+ExternalProject_Add(
+    protobuf
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+    GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
+    GIT_TAG v25.1
+    CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+        -DCMAKE_C_FLAGS=${_CFLAGS}
+        -DCMAKE_CXX_FLAGS=${_CXXFLAGS}
+)
+
+ExternalProject_Add(
+    pybind11
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+    GIT_REPOSITORY https://github.com/pybind/pybind11.git
+    GIT_TAG v2.11.1
+    GIT_SHALLOW TRUE
+    CMAKE_ARGS
+        -DPYBIND11_TEST=OFF
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
+        -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+)
+
+ExternalProject_Add(
+    tbb
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+    GIT_REPOSITORY https://github.com/wjakob/tbb.git
+    GIT_TAG tbb44u4
+    CMAKE_ARGS
+        -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+        -DBUILD_SHARED_LIBS=OFF
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+)
